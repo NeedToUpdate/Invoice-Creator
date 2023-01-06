@@ -10,7 +10,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className="font-bold text-2xl text-blue">
+        <h1 className="font-bold text-4xl text-green-700">
           Welcome to <a href="https://nextjs.org">Next.js</a> on Docker!
         </h1>
 
