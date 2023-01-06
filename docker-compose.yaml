@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+  nextapp:
+    build:
+      context: ./nextapp
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    container_name: nextapp
+    env_file:
+      - ./.env
+    expose:
+      - 3000
+    volumes:
+      - ./nextapp:/app
+    depends_on:
+      - mongodb_pdf
+  mongodb_pdf:
+    image: mongo
+    volumes:
+      - ./mongo-entrypoint:/docker-entrypoint-initdb.d:ro
+      - mongo_data:/data/db
+    container_name: mongodb_pdf
+    restart: unless-stopped
+    expose:
+      - 27017
+    env_file:
+      - ./.env
+    command: mongod
+  webserver_pdf:
+    build: ./nginx
+    image: nginx
+    container_name: webserver_pdf
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - nginxdata:/var/log/nginx
+    depends_on:
+      - nextapp
+
+volumes:
+  nginxdata:
+  mongo_data:
