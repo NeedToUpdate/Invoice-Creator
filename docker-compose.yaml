@@ -3,7 +3,7 @@ services:
   nextapp:
     build:
       context: ./nextapp
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.${APP_ENV}
     restart: unless-stopped
     container_name: nextapp
     env_file:
