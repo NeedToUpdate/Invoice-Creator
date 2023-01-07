@@ -4,7 +4,7 @@ interface InputProps {
   label: string;
   placeholder: string;
   className?: string;
-  initialValue?: string;
+  value?: string;
   onChange?: Function;
   withUnit?: string;
   children?: React.ReactElement<SVGElement>; //used for an svg icon
@@ -12,11 +12,11 @@ interface InputProps {
 }
 
 export default function InputField(props: InputProps) {
-  const [value, setValue] = useState(props.initialValue || "");
+  const [value, setValue] = useState(props.value || "");
   const [errors, setErrors] = useState([] as string[]);
 
   useEffect(() => {
-    if (props.initialValue === undefined && value == "" && props.type == "date") {
+    if (props.value === undefined && value == "" && props.type == "date") {
       //default to today if no other values are set
       setValue(new Date().toISOString().split("T")[0]);
     }
@@ -36,7 +36,7 @@ export default function InputField(props: InputProps) {
         <input
           type={props.type ? props.type : "text"}
           id={`input-group-${props.label.toLowerCase()}`}
-          value={value || ""}
+          value={value || props.value || ""}
           onChange={(ev) => {
             setValue(ev.target.value);
             if (props.onChange) {
