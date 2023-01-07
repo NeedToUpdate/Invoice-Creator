@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
-module.exports = {
+const nextConfig = {
+  reactStrictMode: true,
   output: "standalone",
   webpackDevMiddleware: (config) => {
     config.watchOptions = {
@@ -9,3 +10,5 @@ module.exports = {
     return config;
   },
 };
+
+module.exports = nextConfig;
