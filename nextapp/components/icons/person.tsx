@@ -1,6 +1,6 @@
-export default function PersonIcon({ size }: { size?: string }) {
+export default function PersonIcon({ className }: { className?: string }) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-${size || "6"} h-${size || "6"}`}>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
