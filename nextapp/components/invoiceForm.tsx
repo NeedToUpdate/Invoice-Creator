@@ -226,6 +226,25 @@ export default function InvoiceForm() {
         >
           Save Info
         </Button>
+        <Button
+          onClick={async () => {
+            const res = await fetch("/api/get_pdf");
+            const blob = await res.blob();
+            const newBlob = new Blob([blob]);
+            const blobUrl = window.URL.createObjectURL(newBlob);
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.setAttribute("download", `${"filename"}.${"pdf"}`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode?.removeChild(link);
+
+            // clean up Url
+            window.URL.revokeObjectURL(blobUrl);
+          }}
+        >
+          test
+        </Button>
       </div>
     </div>
   );
