@@ -29,11 +29,11 @@ export default function InputField(props: InputProps) {
   useEffect(() => {
     if (props.value === undefined && value == "" && props.type == "date") {
       //default to today if no other values are set
-      setValue(new Date().toISOString().split("T")[0]);
+      setValue(new Date().toLocaleDateString("en-ca"));
       if (props.onChange) {
         props.onChange({
           target: {
-            value: new Date().toISOString().split("T")[0],
+            value: new Date().toLocaleDateString("en-ca"),
           },
         });
       }
