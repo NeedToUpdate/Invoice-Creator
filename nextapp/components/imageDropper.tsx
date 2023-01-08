@@ -79,7 +79,7 @@ export default function ImageDropper(props: props) {
           canvas.current.width = newWidth;
           canvas.current.height = newHeight;
           canvas!.current!.getContext("2d")!.drawImage(image, 0, 0, newWidth, newHeight);
-          let dataUrl = canvas.current.toDataURL("image/webp");
+          let dataUrl = canvas.current.toDataURL("image/png");
           if (props.onFileInput) {
             props.onFileInput(dataUrl);
           }
