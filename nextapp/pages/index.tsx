@@ -16,15 +16,11 @@ export default function Home() {
         <meta name="msapplication-TileColor" content="#2f6690" />
         <meta name="theme-color" content="#84b3d7" />
       </Head>
-      <div className="flex-grow flex">
-        <main className="flex flex-col justify-center items-center w-full h-full m-5">
-          <InvoiceForm></InvoiceForm>
-        </main>
-        <aside className="m-5">
-          <p>Type in your code to restore your info:</p>
-        </aside>
-      </div>
-      <footer className="flex justify-center items-center">
+      <main className="flex flex-col justify-center items-center w-full h-full p-5 dark:bg-slate-700">
+        <InvoiceForm></InvoiceForm>
+      </main>
+
+      <footer className="flex justify-center items-center dark:bg-slate-800">
         <p>copyright 2023</p>
       </footer>
     </div>
