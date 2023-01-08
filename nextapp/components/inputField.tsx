@@ -4,11 +4,12 @@ interface InputProps {
   label: string;
   placeholder: string;
   className?: string;
-  value?: string;
+  value?: string | number;
   onChange?: Function;
   withUnit?: string;
   children?: React.ReactElement<SVGElement>; //used for an svg icon
-  type?: "date" | "email" | "password";
+  type?: "date" | "email" | "password" | "number";
+  errors?: string[];
 }
 
 export default function InputField(props: InputProps) {
@@ -16,18 +17,35 @@ export default function InputField(props: InputProps) {
   const [errors, setErrors] = useState([] as string[]);
 
   useEffect(() => {
+    if (props.value) {
+      setValue(props.value);
+    }
+  }, [props.value]);
+
+  useEffect(() => {
+    setErrors(props.errors || ([] as string[]));
+  }, [props.errors]);
+
+  useEffect(() => {
     if (props.value === undefined && value == "" && props.type == "date") {
       //default to today if no other values are set
       setValue(new Date().toISOString().split("T")[0]);
+      if (props.onChange) {
+        props.onChange({
+          target: {
+            value: new Date().toISOString().split("T")[0],
+          },
+        });
+      }
     }
   }, []);
 
   return (
-    <div className={`flex flex-col justify-center ${props.className}`}>
-      <label htmlFor={`input-group-${props.label.toLowerCase()}`} className="block mb-[1px] text-sm font-medium text-gray-900 dark:text-gray-300">
+    <div className={`flex relative flex-col justify-center ${props.className}`}>
+      <label htmlFor={`input-group-${props.label.toLowerCase()}`} className={`block mb-[1px] text-sm font-medium ${errors.length ? "text-red-500 dark:text-red-400" : "text-gray-900 dark:text-gray-300"}`}>
         {props.label}
       </label>
-      <div className={props.withUnit ? "flex" : "relative"}>
+      <div className={`${props.withUnit ? "flex" : "relative"} ${errors.length ? "outline-red-500 dark:outline-red-400 outline outline-[1px] rounded-lg" : ""}`}>
         {props.withUnit ? (
           <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">{props.withUnit}</span>
         ) : (
@@ -40,7 +58,7 @@ export default function InputField(props: InputProps) {
           onChange={(ev) => {
             setValue(ev.target.value);
             if (props.onChange) {
-              props.onChange(ev.target.value);
+              props.onChange(ev);
             }
           }}
           className={
@@ -52,6 +70,19 @@ export default function InputField(props: InputProps) {
           placeholder={props.placeholder}
         />
       </div>
+      {errors.length ? (
+        <div className="absolute left-0 top-[100%] bg-red-400/30 z-[1000] p-2 rounded-lg border-solid border-[1px] border-red-500 dark:border-red-400 w-full flex flex-col gap-1 items-center">
+          {errors.map((error, i) => {
+            return (
+              <p key={i} className="text-sm text-red-500 dark:text-red-400">
+                {error}
+              </p>
+            );
+          })}
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

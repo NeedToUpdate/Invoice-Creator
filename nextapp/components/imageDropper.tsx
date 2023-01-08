@@ -8,11 +8,12 @@ const max_size = 200;
 interface props {
   onFileInput: Function;
   errors?: string[];
+  value?: string; //base64
 }
 
 export default function ImageDropper(props: props) {
   const [hasImage, setHasImage] = useState(false);
-  const [isDragginOver, onDragProps] = useDrag();
+  const [isDraggingOver, onDragProps] = useDrag();
   const input = useRef<HTMLInputElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const [errors, setErrors] = useState<string[]>([]);
@@ -23,7 +24,6 @@ export default function ImageDropper(props: props) {
     }
   }, [props.errors]);
   const [lastFile, setLastFile] = useState<Blob | null>(null);
-  const [imageToUpload, setImageToUpload] = useState<HTMLImageElement | null>(null);
   const hasPreview = () => {
     return !navigator.userAgent.match(/(Android (1.0|1.1|1.5|1.6|2.0|2.1))|(Windows Phone (OS 7|8.0))|(XBLWP)|(ZuneWP)|(w(eb)?OSBrowser)|(webOS)|(Kindle\/(1.0|2.0|2.5|3.0))/) && window.FileReader && !!window.CanvasRenderingContext2D;
   };
@@ -34,6 +34,20 @@ export default function ImageDropper(props: props) {
   useEffect(() => {
     setSupportsDragAndDrop(supportsDragAndDropCheck());
   }, []);
+  useEffect(() => {
+    if (props.value) {
+      let img = new Image();
+      img.src = props.value;
+      setHasImage(true);
+      img.onload = () => {
+        if (canvas && canvas.current) {
+          canvas.current.width = img.width;
+          canvas.current.height = img.height;
+          canvas.current.getContext("2d")?.drawImage(img, 0, 0, img.width, img.height);
+        }
+      };
+    }
+  }, [props.value]);
   const handleDrop = (ev: React.DragEvent<HTMLDivElement>) => {
     ev.preventDefault();
     ev.stopPropagation();
@@ -66,7 +80,6 @@ export default function ImageDropper(props: props) {
           canvas.current.height = newHeight;
           canvas!.current!.getContext("2d")!.drawImage(image, 0, 0, newWidth, newHeight);
           let dataUrl = canvas.current.toDataURL("image/webp");
-          setImageToUpload(image);
           if (props.onFileInput) {
             props.onFileInput(dataUrl);
           }
@@ -153,7 +166,7 @@ export default function ImageDropper(props: props) {
             className={
               `border-[1px] bg-gray-50 dark:bg-gray-700 duration-200 ease-out rounded-lg w-full h-full flex flex-col justify-center items-center m-1 p-5 cursor-pointer aspect-square
               hover:border-primary-1200 hover:text-primary-1200   dark:hover:border-gray-300 dark:hover:text-gray-300 
-        ` + (isDragginOver ? " border-primary-700 dark:border-primary-200 text-primary-700  dark:text-primary-200 shadow-[0_0_2px_2px] shadow-primary-500" : " border-gray-300 text-black dark:border-gray-500  dark:text-gray-400")
+        ` + (isDraggingOver ? " border-primary-700 dark:border-primary-200 text-primary-700  dark:text-primary-200 shadow-[0_0_2px_2px] shadow-primary-500" : " border-gray-300 text-black dark:border-gray-500  dark:text-gray-400")
             }
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 stroke-[1px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
