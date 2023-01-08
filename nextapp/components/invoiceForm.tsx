@@ -152,7 +152,7 @@ export default function InvoiceForm() {
       </div>
       <div className="flex w-full h-full gap-2 flex-wrap flex-col md:flex-row">
         <div className="flex flex-col gap-2 flex-1 flex-wrap justify-center items-center">
-          <InputField {...createValues("userAddress")} className="w-full max-w-[400px]" label="Your Address" placeholder="1234 Name Street">
+          <InputField {...createValues("userAddress")} className="w-full max-w-[400px]" label="Your Address & Phone Number" placeholder="1234 Name Street">
             <SmallHouseIcon className="w-6 h-6 text-gray-600 dark:text-gray-400"></SmallHouseIcon>
           </InputField>
           <InputField {...createValues("destAddress")} className="w-full max-w-[400px]" label="Destination Address" placeholder="5678 Other Street">
@@ -228,7 +228,13 @@ export default function InvoiceForm() {
         </Button>
         <Button
           onClick={async () => {
-            const res = await fetch("/api/get_pdf");
+            const res = await fetch("/api/get_pdf", {
+              method: "POST",
+              body: JSON.stringify({
+                fields: fields,
+                itemRows: itemRows,
+              }),
+            });
             const blob = await res.blob();
             const newBlob = new Blob([blob]);
             const blobUrl = window.URL.createObjectURL(newBlob);
