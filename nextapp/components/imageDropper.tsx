@@ -9,6 +9,7 @@ interface props {
   onFileInput: Function;
   errors?: string[];
   value?: string; //base64
+  onDelete?: Function;
 }
 
 export default function ImageDropper(props: props) {
@@ -144,6 +145,9 @@ export default function ImageDropper(props: props) {
             onClick={() => {
               setHasImage(false);
               setLastFile(null);
+              if (props.onDelete) {
+                props.onDelete();
+              }
             }}
           >
             <TrashIcon className="w-5 h-5 text-red-500 dark:text-red-300"></TrashIcon>

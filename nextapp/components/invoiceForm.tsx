@@ -1,14 +1,14 @@
-import React, { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import InputField from "../components/inputField";
 import PersonIcon from "../components/icons/person";
 import HouseIcon from "../components/icons/house";
 import SmallHouseIcon from "../components/icons/smallHouse";
-import QuestionIcon from "../components/icons/question";
 import CalendarIcon from "./icons/calendar";
 import ImageDropper from "./imageDropper";
 import ItemRowField from "./itemRowField";
 import PlusIcon from "./icons/plus";
 import Button from "./button";
+import PhoneIcon from "./icons/phone";
 
 interface ItemRow {
   id: number; //allows removal and component reload
@@ -22,21 +22,23 @@ interface ItemRowError {
 }
 
 interface FieldValues {
-  userAddress: string;
-  destAddress: string;
-  number: number;
+  userAddress?: string;
+  destAddress?: string;
+  destName?: string;
+  number?: number;
   date: string;
-  reason: string;
+  phone?: string;
   name: string;
-  logo: string; //base64 of the image. Image is 150px x 150px so shouldn't be too big
+  logo?: string; //base64 of the image. Image is 150px x 150px so shouldn't be too big
 }
 
 interface ErrorFields {
   userAddress: string[];
   destAddress: string[];
+  destName: string[];
   number: string[];
   date: string[];
-  reason: string[];
+  phone: string[];
   name: string[];
   logo: string[];
 }
@@ -47,8 +49,9 @@ export default function InvoiceForm() {
     destAddress: [] as string[],
     number: [] as string[],
     date: [] as string[],
-    reason: [] as string[],
+    phone: [] as string[],
     name: [] as string[],
+    destName: [] as string[],
     logo: [] as string[],
   };
   const [itemRows, setItemRows] = useState([] as ItemRow[]);
@@ -77,8 +80,8 @@ export default function InvoiceForm() {
       setErrors((old) => ({ ...old, name: ["Please write your name."] }));
       hasErrors = true;
     }
-    if (!fields.reason || fields.reason.length < 1) {
-      setErrors((old) => ({ ...old, reason: ["Please write a reason for this invoice."] }));
+    if (!fields.phone || fields.phone.length < 1) {
+      setErrors((old) => ({ ...old, phone: ["Please write a phone for this invoice."] }));
       hasErrors = true;
     }
     if (!fields.date || fields.date.length < 1) {
@@ -144,24 +147,30 @@ export default function InvoiceForm() {
             onFileInput={(base64: string) => {
               setFields((old) => ({ ...old, logo: base64 }));
             }}
+            onDelete={() => {
+              setFields((old) => ({ ...old, logo: undefined }));
+            }}
           ></ImageDropper>
         </div>
         <InputField {...createValues("name")} className="w-full max-w-[400px]" label="Name" placeholder="John Doe">
           <PersonIcon className="w-6 h-6 text-gray-600 dark:text-gray-400"></PersonIcon>
         </InputField>
       </div>
-      <div className="flex w-full h-full gap-2 flex-wrap flex-col md:flex-row">
-        <div className="flex flex-col gap-2 flex-1 flex-wrap justify-center items-center">
-          <InputField {...createValues("userAddress")} className="w-full max-w-[400px]" label="Your Address & Phone Number" placeholder="1234 Name Street">
+      <div className="flex w-full h-full gap-2 flex-wrap flex-col md:items-start md:flex-row">
+        <div className="flex flex-col gap-2 flex-1 flex-wrap justify-center  items-center">
+          <InputField {...createValues("userAddress")} className="w-full max-w-[400px]" label="Your Address" placeholder="1234 Name Street">
             <SmallHouseIcon className="w-6 h-6 text-gray-600 dark:text-gray-400"></SmallHouseIcon>
+          </InputField>
+          <InputField {...createValues("phone")} className="w-full max-w-[400px]" label="Phone Number" type="tel" placeholder="123-555-4321">
+            <PhoneIcon className="w-6 h-6 text-gray-600 dark:text-gray-400"></PhoneIcon>
+          </InputField>
+        </div>
+        <div className="flex flex-col gap-2 flex-1 flex-wrap justify-center  items-center">
+          <InputField {...createValues("destName")} className="w-full max-w-[400px]" label="Destination Name" placeholder="Jane Jones">
+            <PersonIcon className="w-6 h-6 text-gray-600 dark:text-gray-400"></PersonIcon>
           </InputField>
           <InputField {...createValues("destAddress")} className="w-full max-w-[400px]" label="Destination Address" placeholder="5678 Other Street">
             <HouseIcon className="w-6 h-6 text-gray-600 dark:text-gray-400"></HouseIcon>
-          </InputField>
-        </div>
-        <div className="flex flex-col gap-2 flex-1 flex-wrap justify-center items-center">
-          <InputField {...createValues("reason")} className="w-full max-w-[400px]" label="Reason" placeholder="Contract Work">
-            <QuestionIcon className="w-6 h-6 text-gray-600 dark:text-gray-400"></QuestionIcon>
           </InputField>
           <div className="flex gap-2">
             <InputField {...createValues("number")} className="flex-1" withUnit="#" label="Invoice Number" placeholder="100 (leave blank to ignore)"></InputField>

@@ -52,7 +52,6 @@ export default function ItemRowField(props: props) {
               return { name: old.name, price: val.target.value };
             });
           }}
-          type="number"
           className=""
           withUnit="$"
           label="Price"
