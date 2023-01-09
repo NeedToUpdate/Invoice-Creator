@@ -78,7 +78,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
       datas: data.itemRows
         .map((row: ItemRow, i: number) => ({
           name: "   " + (row.name === undefined ? "" : row.name),
-          price: "   " + (isNaN(parseFloat(row.price)) ? (row.price === undefined ? "" : row.price) : "$" + row.price),
+          price: "   " + (isNaN(parseFloat(row.price)) ? (row.price === undefined ? "" : row.price) : "$" + parseFloat(row.price).toFixed(2)),
         }))
         .concat([
           { name: "", price: "" },
@@ -86,13 +86,15 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
             name: "bold:   Total",
             price:
               "bold:   $" +
-              data.itemRows.reduce((a: number, b: ItemRow) => {
-                if (!isNaN(parseFloat(b.price))) {
-                  return a + parseFloat(b.price);
-                } else {
-                  return a;
-                }
-              }, 0),
+              data.itemRows
+                .reduce((a: number, b: ItemRow) => {
+                  if (!isNaN(parseFloat(b.price))) {
+                    return a + parseFloat(b.price);
+                  } else {
+                    return a;
+                  }
+                }, 0)
+                .toFixed(2),
             options: {
               separation: false,
             },
