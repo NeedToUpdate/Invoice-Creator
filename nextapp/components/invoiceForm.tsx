@@ -9,6 +9,7 @@ import ItemRowField from "./itemRowField";
 import PlusIcon from "./icons/plus";
 import Button from "./button";
 import PhoneIcon from "./icons/phone";
+import SaveOnlineField from "./saveOnlineField";
 
 interface ItemRow {
   id: number; //allows removal and component reload
@@ -59,19 +60,27 @@ export default function InvoiceForm() {
   const [errors, setErrors] = useState(emptyErrors);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const [itemRowErrors, setItemRowErrors] = useState([] as ItemRowError[]);
+  const [savedToLocal, setSavedToLocal] = useState(false);
+  const [savedToOnline, setSavedToOnline] = useState(false);
+  const [saveOnlineSuccessful, setSaveOnlineSuccessful] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("fields")) {
+      setSavedToLocal(true);
       setFields(JSON.parse(localStorage.getItem("fields") as string) as FieldValues);
       setErrors(emptyErrors);
     }
     if (localStorage.getItem("itemRows")) {
+      setSavedToLocal(true);
       setItemRows(JSON.parse(localStorage.getItem("itemRows") as string) as ItemRow[]);
       setItemRowErrors([]);
     }
+    if (localStorage.getItem("saveVals")) {
+      setSavedToOnline(true);
+    }
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setSubmitButtonDisabled(true);
     let hasErrors = false;
     setErrors(emptyErrors);
@@ -80,16 +89,14 @@ export default function InvoiceForm() {
       setErrors((old) => ({ ...old, name: ["Please write your name."] }));
       hasErrors = true;
     }
-    if (!fields.phone || fields.phone.length < 1) {
-      setErrors((old) => ({ ...old, phone: ["Please write a phone for this invoice."] }));
-      hasErrors = true;
-    }
+
     if (!fields.date || fields.date.length < 1) {
       setErrors((old) => ({ ...old, date: ["Please select a date."] }));
       hasErrors = true;
     }
     itemRows.forEach((row, i) => {
       if (!row.name || row.name.length < 1) {
+        hasErrors = true;
         setItemRowErrors((old) => {
           if (old[i] == undefined) {
             old[i] = {
@@ -102,6 +109,7 @@ export default function InvoiceForm() {
         });
       }
       if (row.price === undefined || row.price === "") {
+        hasErrors = true;
         setItemRowErrors((old) => {
           if (old[i] == undefined) {
             old[i] = {
@@ -110,6 +118,7 @@ export default function InvoiceForm() {
             };
           }
           old[i].price = ["Please add a price."];
+          hasErrors = true;
           return old;
         });
       }
@@ -118,6 +127,26 @@ export default function InvoiceForm() {
       setSubmitButtonDisabled(false);
       return;
     }
+    const res = await fetch("/api/get_pdf", {
+      method: "POST",
+      body: JSON.stringify({
+        fields: fields,
+        itemRows: itemRows,
+      }),
+    });
+    const blob = await res.blob();
+    const newBlob = new Blob([blob]);
+    const blobUrl = window.URL.createObjectURL(newBlob);
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.setAttribute("download", `${"filename"}.${"pdf"}`);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+
+    // clean up Url
+    window.URL.revokeObjectURL(blobUrl);
+    setSubmitButtonDisabled(false);
   };
 
   const handleSave = () => {
@@ -129,6 +158,8 @@ export default function InvoiceForm() {
     return {
       value: fields[fieldName],
       onChange: (ev: ChangeEvent<HTMLInputElement>) => {
+        setSavedToLocal(false);
+        setSavedToOnline(false);
         setErrors((old) => ({ ...old, [fieldName]: [] }));
         setFields((old) => ({ ...old, [fieldName]: ev.target.value }));
       },
@@ -188,6 +219,8 @@ export default function InvoiceForm() {
               price={row.price}
               errors={itemRowErrors[i]}
               onChange={(newVals: ItemRow) => {
+                setSavedToLocal(false);
+                setSavedToOnline(false);
                 setItemRows((old) => {
                   old[i].name = newVals.name;
                   old[i].price = newVals.price;
@@ -235,31 +268,26 @@ export default function InvoiceForm() {
         >
           Save Info
         </Button>
-        <Button
-          onClick={async () => {
-            const res = await fetch("/api/get_pdf", {
-              method: "POST",
-              body: JSON.stringify({
-                fields: fields,
-                itemRows: itemRows,
-              }),
-            });
-            const blob = await res.blob();
-            const newBlob = new Blob([blob]);
-            const blobUrl = window.URL.createObjectURL(newBlob);
-            const link = document.createElement("a");
-            link.href = blobUrl;
-            link.setAttribute("download", `${"filename"}.${"pdf"}`);
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode?.removeChild(link);
-
-            // clean up Url
-            window.URL.revokeObjectURL(blobUrl);
-          }}
-        >
-          test
-        </Button>
+      </div>
+      <div className="w-full flex justify-center items-center flex-col">
+        {savedToLocal ? (
+          <div className="flex flex-col gap-2 justify-center items-center">
+            {" "}
+            <p className="text-emerald-500 dark:text-emerald-300">This form is saved to this browser.</p>
+            {savedToOnline ? (
+              <p className="text-emerald-500 dark:text-emerald-300">This form is saved online with the following name and code:</p>
+            ) : (
+              <p className="text-emerald-500 dark:text-emerald-300">Save this form to the cloud to access it from other devices!</p>
+            )}
+            <SaveOnlineField></SaveOnlineField>
+            {saveOnlineSuccessful ? <p className="text-emerald-500 dark:text-emerald-300">Saved Online! Use the same name and password to access.</p> : <></>}
+          </div>
+        ) : (
+          <div className="mt-2 flex justify-center items-center flex-col">
+            <p className="text-gray-500 dark:text-gray-300">Load a form from the cloud:</p>
+            <SaveOnlineField load={true}></SaveOnlineField>
+          </div>
+        )}
       </div>
     </div>
   );
