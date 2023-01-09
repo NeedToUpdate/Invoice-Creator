@@ -6,6 +6,7 @@ interface props {
   values?: { name?: string; code?: string };
   load?: boolean;
   onSubmit?: Function;
+  data?: object;
 }
 
 export default function SaveOnlineField(props: props) {

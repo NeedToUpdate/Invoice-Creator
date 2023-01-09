@@ -279,7 +279,7 @@ export default function InvoiceForm() {
             ) : (
               <p className="text-emerald-500 dark:text-emerald-300">Save this form to the cloud to access it from other devices!</p>
             )}
-            <SaveOnlineField></SaveOnlineField>
+            <SaveOnlineField data={{ fieldValues: fields, itemRows: itemRows }}></SaveOnlineField>
             {saveOnlineSuccessful ? <p className="text-emerald-500 dark:text-emerald-300">Saved Online! Use the same name and password to access.</p> : <></>}
           </div>
         ) : (
