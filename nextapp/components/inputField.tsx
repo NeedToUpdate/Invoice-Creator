@@ -8,7 +8,7 @@ interface InputProps {
   onChange?: Function;
   withUnit?: string;
   children?: React.ReactElement<SVGElement>; //used for an svg icon
-  type?: "date" | "email" | "password" | "number";
+  type?: "date" | "email" | "password" | "number" | "tel";
   errors?: string[];
 }
 
@@ -56,6 +56,36 @@ export default function InputField(props: InputProps) {
           id={`input-group-${props.label.toLowerCase()}`}
           value={value || props.value || ""}
           onChange={(ev) => {
+            if (props.type === "tel") {
+              let val = ev.target.value;
+              let potentialCountryCode = false;
+              let countryCode = undefined;
+              if (val.startsWith("+")) {
+                potentialCountryCode = true;
+                let numbers = val.replaceAll(/[a-z]/g, "");
+                let firstNonDigit = numbers[numbers.search(/[^\d^\+]/)];
+                if (firstNonDigit) {
+                  countryCode = numbers.split(firstNonDigit)[0];
+                  val = val.slice(countryCode.length);
+                  potentialCountryCode = false;
+                }
+              }
+
+              if (!potentialCountryCode) {
+                val = val.replaceAll(/[^\d]/g, "");
+                const len = val.length;
+                if (len > 3) {
+                  val = val.slice(0, 3) + "-" + val.slice(3);
+                }
+                if (len > 6 && len < 11) {
+                  val = val.slice(0, 7) + "-" + val.slice(7);
+                }
+                if (len === 11) {
+                  val = val.slice(0, 8) + "-" + val.slice(8);
+                }
+              }
+              ev.target.value = (countryCode ? countryCode + (countryCode.length > 1 ? "-" : "") : "") + val;
+            }
             setValue(ev.target.value);
             if (props.onChange) {
               props.onChange(ev);
