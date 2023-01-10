@@ -1,9 +1,10 @@
+import Image from "next/image";
 import React from "react";
 
 const icon = (type: "mongo" | "react" | "tailwind" | "nextjs") => {
   return (
-    <div className="object-fit bg-white dark:bg-primary-700 rounded-lg p-1">
-      <img height={24} width={24} src={`images/${type}-icon.png`} alt={type} title={`Made with ${type}`} />
+    <div className="object-fit w-[28px] h-[28px] bg-white dark:bg-primary-700 rounded-lg p-1">
+      <Image className="w-fit h-fit text-center" height={24} width={24} src={`/images/${type}-icon.png`} alt={type} title={`Made with ${type}`} />
     </div>
   );
 };
