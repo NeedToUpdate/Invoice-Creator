@@ -3,17 +3,19 @@ services:
   nextapp:
     build:
       context: ./nextapp
-      dockerfile: Dockerfile.${APP_ENV}
+      dockerfile: Dockerfile.${NODE_ENV}
     restart: unless-stopped
     container_name: nextapp
     env_file:
       - ./.env
-    ports:
-      - 3000:3000
-    volumes:
-      - ./nextapp:/app
-      - /app/node_modules
-      - /app/.next
+    # ports:
+    #   - 3000:3000
+    expose:
+      - 3000
+    # volumes:
+    #   - ./nextapp:/app
+    #   - /app/node_modules
+    #   - /app/.next
     depends_on:
       - mongodb_pdf
   mongodb_pdf:
