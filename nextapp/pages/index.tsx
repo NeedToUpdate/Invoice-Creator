@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Footer from "../components/footer";
 import InvoiceForm from "../components/invoiceForm";
 
 export default function Home() {
@@ -16,13 +17,12 @@ export default function Home() {
         <meta name="msapplication-TileColor" content="#2f6690" />
         <meta name="theme-color" content="#84b3d7" />
       </Head>
-      <main className="flex flex-col justify-center items-center w-full h-full p-5 dark:bg-slate-700">
+      <main className="relative flex flex-col justify-center items-center w-full h-full p-5 ">
+        <div className="absolute w-full h-full  bg-cover bg-[url('/images/clouds_bg.webp')] dark:bg-[url('/images/clouds_bg_dark.webp')] z-0 blur-sm scale-105"></div>
         <InvoiceForm></InvoiceForm>
       </main>
 
-      <footer className="flex justify-center items-center dark:bg-slate-800">
-        <p>copyright 2023</p>
-      </footer>
+      <Footer></Footer>
     </div>
   );
 }

@@ -40,7 +40,7 @@ export default function InputField(props: InputProps) {
 
   return (
     <div className={`flex relative flex-col justify-center ${props.className}`}>
-      <label htmlFor={`input-group-${props.label.toLowerCase()}`} className={`block mb-[1px] text-sm font-medium ${errors.length ? "text-red-500 dark:text-red-400" : "text-gray-900 dark:text-gray-300"}`}>
+      <label htmlFor={`input-group-${props.label.toLowerCase()}`} className={`block mb-[1px] text-sm font-medium ${errors.length ? "text-red-500 dark:text-red-400" : "text-primary-700 dark:text-primary-100"}`}>
         {props.label}
       </label>
       <div className={`${props.withUnit ? "flex" : "relative"} ${errors.length ? "outline-red-500 dark:outline-red-400 outline outline-[1px] rounded-lg" : ""}`}>

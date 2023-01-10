@@ -33,7 +33,7 @@ export default function Button(props: props) {
       onClick={props.onClick}
       disabled={props.disabled}
       className={
-        "duration-100 flex bg-primary-100 border-primary-400 dark:bg-primary-800 dark:border-primary-700 cursor-pointer gap-1 justify-center items-center rounded-lg whitespace-nowrap px-3.5 py-2.5 border-[1px] dark:text-white hover:bg-white hover:dark:bg-primary-600 hover:translate-y-[-1px] disabled:border-gray-500 disabled:bg-gray-400 disabled:text-gray-600 disabled:dark:text-gray-300 disabled:pointer-events-none"
+        "duration-100 flex bg-primary-100 border-primary-400 dark:bg-primary-800 dark:border-primary-700 cursor-pointer gap-1 justify-center items-center rounded-lg whitespace-nowrap px-3.5 py-2.5 border-[1px] text-primary-800 dark:text-white hover:bg-white hover:dark:bg-primary-600 hover:translate-y-[-1px] disabled:border-gray-500 disabled:bg-gray-400 disabled:text-gray-600 disabled:dark:text-gray-300 disabled:pointer-events-none"
       }
     >
       {props.icon ? getIcon(props.icon) : <></>}

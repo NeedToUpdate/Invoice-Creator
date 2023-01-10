@@ -33,17 +33,6 @@ interface FieldValues {
   logo?: string; //base64 of the image. Image is 150px x 150px so shouldn't be too big
 }
 
-interface ErrorFields {
-  userAddress: string[];
-  destAddress: string[];
-  destName: string[];
-  number: string[];
-  date: string[];
-  phone: string[];
-  name: string[];
-  logo: string[];
-}
-
 export default function InvoiceForm() {
   const emptyErrors = {
     userAddress: [] as string[],
@@ -57,7 +46,8 @@ export default function InvoiceForm() {
   };
   const [itemRows, setItemRows] = useState([] as ItemRow[]);
   const [fields, setFields] = useState({} as FieldValues);
-  const [errors, setErrors] = useState(emptyErrors);
+  const [errors, setErrors] = useState(emptyErrors); //for all the formInputs
+  const [mainErrors, setMainErrors] = useState([] as string[]); //for the main form errors, under the buttons
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const [itemRowErrors, setItemRowErrors] = useState([] as ItemRowError[]);
   const [savedToLocal, setSavedToLocal] = useState(false);
@@ -87,6 +77,7 @@ export default function InvoiceForm() {
     let hasErrors = false;
     setErrors(emptyErrors);
     setItemRowErrors([]);
+    setMainErrors([]);
     if (!fields.name || fields.name.length < 1) {
       setErrors((old) => ({ ...old, name: ["Please write your name."] }));
       hasErrors = true;
@@ -125,6 +116,10 @@ export default function InvoiceForm() {
         });
       }
     });
+    if (itemRows.length === 0) {
+      setMainErrors(["Please add at least one item to the invoice."]);
+      hasErrors = true;
+    }
     if (hasErrors) {
       setSubmitButtonDisabled(false);
       return;
@@ -141,7 +136,17 @@ export default function InvoiceForm() {
     const blobUrl = window.URL.createObjectURL(newBlob);
     const link = document.createElement("a");
     link.href = blobUrl;
-    link.setAttribute("download", `${"filename"}.${"pdf"}`);
+    function createName() {
+      let str = "";
+      if (fields.date) {
+        str += fields.date + "-";
+      }
+      if (fields.destName) {
+        str += fields.destName + "-";
+      }
+      return str + "invoice";
+    }
+    link.setAttribute("download", `${createName()}.${"pdf"}`);
     document.body.appendChild(link);
     link.click();
     link.parentNode?.removeChild(link);
@@ -172,8 +177,8 @@ export default function InvoiceForm() {
   };
 
   return (
-    <div className="flex flex-col w-fit bg-slate-100 dark:bg-primary-900 rounded-lg p-5 justify-center items-center gap-3">
-      <h1 className="text-2xl font-bold text-primary-500 dark:text-primary-200 mb-5">Create Your Invoice</h1>
+    <div className="flex flex-col w-fit bg-slate-100 dark:bg-primary-900 rounded-lg p-5 justify-center items-center gap-3 z-10 shadow-md">
+      <h1 className="text-2xl font-bold text-primary-500 dark:text-primary-100 mb-5">Create Your Invoice</h1>
       <div className="flex gap-2 items-center justify-center md:flex-row flex-col">
         <div className="max-w-[150px] h-fit">
           <ImageDropper
@@ -208,7 +213,7 @@ export default function InvoiceForm() {
             <HouseIcon className="w-6 h-6 text-gray-600 dark:text-gray-400"></HouseIcon>
           </InputField>
           <div className="flex gap-2">
-            <InputField {...createValues("number")} className="flex-1" withUnit="#" label="Invoice Number" placeholder="100 (leave blank to ignore)"></InputField>
+            <InputField {...createValues("number")} className="flex-1" withUnit="#" label="Invoice Number" placeholder="100"></InputField>
             <InputField {...createValues("date")} className="flex-1" type="date" label="Date" placeholder="2022/12/31">
               <CalendarIcon className="w-6 h-6 text-gray-600 dark:text-gray-400"></CalendarIcon>
             </InputField>
@@ -254,7 +259,7 @@ export default function InvoiceForm() {
           </div>
         </div>
       </div>
-      <div className="flex justify-center items-center gap-2">
+      <div className="flex justify-center items-center gap-2 flex-wrap">
         <Button
           disabled={submitButtonDisabled}
           icon="check"
@@ -290,9 +295,17 @@ export default function InvoiceForm() {
         )}
       </div>
       <div className="w-full flex justify-center items-center flex-col">
+        <div className="errors w-full flex flex-col gap-2 justify-center items-center">
+          {mainErrors.map((error, i) => {
+            return (
+              <p key={i} className="text-red-500 dark:text-red-400">
+                {error}
+              </p>
+            );
+          })}
+        </div>
         {savedToLocal ? (
           <div className="flex flex-col gap-2 justify-center items-center">
-            {" "}
             <p className="text-emerald-500 dark:text-emerald-300">This form is saved to this browser.</p>
             {savedToOnline ? (
               <p className="text-emerald-500 dark:text-emerald-300">This form is saved online with the following name and code:</p>
@@ -312,7 +325,7 @@ export default function InvoiceForm() {
           </div>
         ) : (
           <div className="mt-2 flex justify-center items-center flex-col">
-            <p className="text-gray-500 dark:text-gray-300">Load a form from the cloud:</p>
+            <p className="text-gray-500 dark:text-gray-400 my-2">Load a form from the cloud:</p>
             <SaveOnlineField
               load={true}
               onSubmit={(data: { data: { fieldValues: FieldValues; itemRows: ItemRow[] }; name: string }) => {
