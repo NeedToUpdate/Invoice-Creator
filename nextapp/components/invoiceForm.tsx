@@ -298,7 +298,7 @@ export default function InvoiceForm() {
         <div className="errors w-full flex flex-col gap-2 justify-center items-center">
           {mainErrors.map((error, i) => {
             return (
-              <p key={i} className="text-red-500 dark:text-red-400">
+              <p key={i} className="text-red-500 dark:text-red-400 text-center">
                 {error}
               </p>
             );
