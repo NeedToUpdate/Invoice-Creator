@@ -63,6 +63,7 @@ export default function InvoiceForm() {
   const [savedToLocal, setSavedToLocal] = useState(false);
   const [savedToOnline, setSavedToOnline] = useState(false);
   const [saveOnlineSuccessful, setSaveOnlineSuccessful] = useState(false);
+  const [savedCloudVals, setSavedCloudVals] = useState({ name: "", code: "" });
 
   useEffect(() => {
     if (localStorage.getItem("fields")) {
@@ -77,6 +78,7 @@ export default function InvoiceForm() {
     }
     if (localStorage.getItem("saveVals")) {
       setSavedToOnline(true);
+      setSavedCloudVals(JSON.parse(localStorage.getItem("saveVals") || "{}"));
     }
   }, []);
 
@@ -152,6 +154,8 @@ export default function InvoiceForm() {
   const handleSave = () => {
     localStorage.setItem("fields", JSON.stringify(fields));
     localStorage.setItem("itemRows", JSON.stringify(itemRows));
+    setSavedToLocal(true);
+    setSavedToOnline(false);
   };
 
   const createValues = (fieldName: keyof FieldValues) => {
@@ -268,6 +272,22 @@ export default function InvoiceForm() {
         >
           Save Info
         </Button>
+        {savedToLocal ? (
+          <Button
+            onClick={() => {
+              localStorage.clear();
+              setSavedToLocal(false);
+              setSavedToOnline(false);
+              setFields({ userAddress: undefined, destAddress: undefined, destName: undefined, number: undefined, date: "", phone: undefined, name: "", logo: undefined });
+              setItemRows([] as ItemRow[]);
+            }}
+            icon="trash"
+          >
+            Remove Local Data
+          </Button>
+        ) : (
+          <></>
+        )}
       </div>
       <div className="w-full flex justify-center items-center flex-col">
         {savedToLocal ? (
@@ -279,13 +299,38 @@ export default function InvoiceForm() {
             ) : (
               <p className="text-emerald-500 dark:text-emerald-300">Save this form to the cloud to access it from other devices!</p>
             )}
-            <SaveOnlineField data={{ fieldValues: fields, itemRows: itemRows }}></SaveOnlineField>
+            <SaveOnlineField
+              data={{ fieldValues: fields, itemRows: itemRows }}
+              onSubmit={(values: { name: string; code: string }) => {
+                localStorage.setItem("saveVals", JSON.stringify(values));
+                setSavedCloudVals(values);
+                setSavedToOnline(true);
+              }}
+              values={savedCloudVals}
+            ></SaveOnlineField>
             {saveOnlineSuccessful ? <p className="text-emerald-500 dark:text-emerald-300">Saved Online! Use the same name and password to access.</p> : <></>}
           </div>
         ) : (
           <div className="mt-2 flex justify-center items-center flex-col">
             <p className="text-gray-500 dark:text-gray-300">Load a form from the cloud:</p>
-            <SaveOnlineField load={true}></SaveOnlineField>
+            <SaveOnlineField
+              load={true}
+              onSubmit={(data: { data: { fieldValues: FieldValues; itemRows: ItemRow[] }; name: string }) => {
+                console.log(data);
+                setFields(data.data.fieldValues);
+                setItemRows(
+                  data.data.itemRows.map((x) => {
+                    x.id = (Math.random() * 1000) | 0;
+                    return x;
+                  })
+                );
+                setSavedCloudVals({
+                  name: data.name,
+                  code: "",
+                });
+                setSavedToOnline(true);
+              }}
+            ></SaveOnlineField>
           </div>
         )}
       </div>
