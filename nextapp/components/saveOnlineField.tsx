@@ -70,7 +70,7 @@ export default function SaveOnlineField(props: props) {
       return;
     }
     const res = await fetch("/api/invoice", { method: "POST", body: JSON.stringify({ ...values, data: props.data }) });
-    if (res.status === 204 || res.status === 200) {
+    if (res.status === 204 || res.status === 201) {
       setButtonDisabled(false);
       if (props.onSubmit) {
         props.onSubmit(values);
@@ -89,7 +89,7 @@ export default function SaveOnlineField(props: props) {
     <div className="flex justify-center items-center  flex-col gap-2 w-full">
       <div className="flex md:flex-row flex-col gap-2 justify-center items-center md:items-end  flex-wrap w-full flex-grow">
         <InputField
-          label="Name"
+          label="Invoice Name"
           placeholder="johns billing invoice"
           value={values.name}
           onChange={(ev: ChangeEvent<HTMLInputElement>) => {
@@ -128,6 +128,13 @@ export default function SaveOnlineField(props: props) {
           );
         })}
       </div>
+      {alreadySaved ? (
+        <div className="w-full flex flex-col gap-2 justify-center items-center">
+          <p className="text-emerald-500 dark:text-emerald-400">Successfully Saved!</p>
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

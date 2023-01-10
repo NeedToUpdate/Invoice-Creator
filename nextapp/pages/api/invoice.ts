@@ -77,8 +77,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           code: hash,
           data: encrypted,
         });
+        return res.status(201).json({ data: "Created" });
       }
-      return res.status(404).json({ data: "Not Found" });
     } catch (e) {
       console.log(e);
       return res.status(400).json({ data: "Invalid Request" });
