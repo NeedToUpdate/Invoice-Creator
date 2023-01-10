@@ -17,9 +17,7 @@ export default function InputField(props: InputProps) {
   const [errors, setErrors] = useState([] as string[]);
 
   useEffect(() => {
-    if (props.value) {
-      setValue(props.value);
-    }
+    setValue(props.value || "");
   }, [props.value]);
 
   useEffect(() => {

@@ -48,6 +48,9 @@ export default function ImageDropper(props: props) {
         }
       };
     }
+    if (props.value === undefined) {
+      setHasImage(false);
+    }
   }, [props.value]);
   const handleDrop = (ev: React.DragEvent<HTMLDivElement>) => {
     ev.preventDefault();
