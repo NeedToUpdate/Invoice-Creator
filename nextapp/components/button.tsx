@@ -2,8 +2,9 @@ import React, { MouseEventHandler } from "react";
 import DocumentCheckIcon from "./icons/documentCheck";
 import GlobeIcon from "./icons/globe";
 import SaveIcon from "./icons/saveIcon";
+import TrashIcon from "./icons/trash";
 
-type validIcon = "check" | "save" | "globe";
+type validIcon = "check" | "save" | "globe" | "trash";
 
 interface props {
   onClick: MouseEventHandler<HTMLButtonElement>;
@@ -21,6 +22,8 @@ export default function Button(props: props) {
         return <SaveIcon className={`w-5 h-5 ${props.disabled ? "text-gray-600 dark:text-gray-300" : "text-primary-600 dark:text-white"}`}></SaveIcon>;
       case "globe":
         return <GlobeIcon className={`w-5 h-5 ${props.disabled ? "text-gray-600 dark:text-gray-300" : "text-primary-600 dark:text-white"}`}></GlobeIcon>;
+      case "trash":
+        return <TrashIcon className={`w-5 h-5 ${props.disabled ? "text-gray-600 dark:text-gray-300" : "text-red-600 dark:text-red-400"}`}></TrashIcon>;
       default:
         return <></>;
     }
