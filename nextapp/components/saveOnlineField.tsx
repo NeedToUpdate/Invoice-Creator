@@ -10,9 +10,8 @@ interface props {
 }
 
 export default function SaveOnlineField(props: props) {
-  const emptyErrors = { name: [] as string[], code: [] as string[] };
   const [values, setValues] = useState({ name: "", code: "" });
-  const [errors, setErrors] = useState(emptyErrors);
+  const [errors, setErrors] = useState([] as string[]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [alreadySaved, setAlreadySaved] = useState(false);
   useEffect(() => {
@@ -24,15 +23,15 @@ export default function SaveOnlineField(props: props) {
     }
   }, [props.values]);
   const handleLoad = async () => {
-    setErrors(emptyErrors);
+    setErrors([]);
     setButtonDisabled(true);
     let hasErrors = false;
-    if (!values.code || values.code == "") {
-      setErrors((old) => ({ ...old, code: ["Please enter your password."] }));
+    if (!values.name || values.name == "") {
+      setErrors((old) => old.concat(["Please enter the name of your invoice."]));
       hasErrors = true;
     }
-    if (!values.name || values.name == "") {
-      setErrors((old) => ({ ...old, name: ["Please enter a name."] }));
+    if (!values.code || values.code == "") {
+      setErrors((old) => old.concat(["Please enter your password."]));
       hasErrors = true;
     }
     if (hasErrors) {
@@ -44,7 +43,7 @@ export default function SaveOnlineField(props: props) {
     searchParams.set("code", values.code);
     const res = await fetch("/api/invoice?" + searchParams.toString(), { method: "GET" });
     if (res.status !== 200) {
-      setErrors({ name: ["This name and password combination is invalid"], code: [] });
+      setErrors((old) => old.concat(["This name and password combination is invalid"]));
       setButtonDisabled(false);
       return;
     }
@@ -55,15 +54,15 @@ export default function SaveOnlineField(props: props) {
     setButtonDisabled(false);
   };
   const handleSubmit = async () => {
-    setErrors(emptyErrors);
+    setErrors([]);
     setButtonDisabled(true);
     let hasErrors = false;
     if (!values.code || values.code == "") {
-      setErrors((old) => ({ ...old, code: ["Please enter a password."] }));
+      setErrors((old) => old.concat(["Please enter a password."]));
       hasErrors = true;
     }
     if (!values.name || values.name == "") {
-      setErrors((old) => ({ ...old, name: ["Please enter a name. Case-insensitive."] }));
+      setErrors((old) => old.concat(["Please enter a name. Case-insensitive."]));
       hasErrors = true;
     }
     if (hasErrors) {
@@ -78,7 +77,7 @@ export default function SaveOnlineField(props: props) {
       }
       return;
     }
-    setErrors({ name: ["This name is invalid."], code: [] });
+    setErrors((old) => old.concat(["This name is invalid."]));
     setButtonDisabled(false);
   };
   useEffect(() => {
@@ -87,39 +86,48 @@ export default function SaveOnlineField(props: props) {
     }
   }, [props.values]);
   return (
-    <div className="flex justify-center items-center md:items-end md:flex-row flex-col gap-2">
-      <InputField
-        label="Name"
-        placeholder="johns billing invoice"
-        value={values.name}
-        errors={errors.name}
-        onChange={(ev: ChangeEvent<HTMLInputElement>) => {
-          setValues((old) => ({ ...old, name: ev.target.value }));
-        }}
-      ></InputField>
-      <InputField
-        label="Password"
-        placeholder="password"
-        type="password"
-        value={values.code}
-        errors={errors.code}
-        onChange={(ev: ChangeEvent<HTMLInputElement>) => {
-          setValues((old) => ({ ...old, code: ev.target.value }));
-        }}
-      ></InputField>
-      <Button
-        disabled={buttonDisabled}
-        icon="globe"
-        onClick={() => {
-          if (props.load) {
-            handleLoad();
-          } else {
-            handleSubmit();
-          }
-        }}
-      >
-        {props.load ? "Load From Cloud" : alreadySaved ? "Update Saved Data" : "Save To Cloud"}
-      </Button>
+    <div className="flex justify-center items-center  flex-col gap-2 w-full">
+      <div className="flex md:flex-row flex-col gap-2 justify-center items-center md:items-end  flex-wrap w-full flex-grow">
+        <InputField
+          label="Name"
+          placeholder="johns billing invoice"
+          value={values.name}
+          onChange={(ev: ChangeEvent<HTMLInputElement>) => {
+            setValues((old) => ({ ...old, name: ev.target.value.toLowerCase() }));
+          }}
+        ></InputField>
+        <InputField
+          label="Password"
+          placeholder="●●●●●●●●"
+          type="password"
+          value={values.code}
+          onChange={(ev: ChangeEvent<HTMLInputElement>) => {
+            setValues((old) => ({ ...old, code: ev.target.value }));
+          }}
+        ></InputField>
+        <Button
+          disabled={buttonDisabled}
+          icon="globe"
+          onClick={() => {
+            if (props.load) {
+              handleLoad();
+            } else {
+              handleSubmit();
+            }
+          }}
+        >
+          {props.load ? "Load From Cloud" : alreadySaved ? "Update Saved Data" : "Save To Cloud"}
+        </Button>
+      </div>
+      <div className="errors w-full flex flex-col gap-2 justify-center items-center">
+        {errors.map((error, i) => {
+          return (
+            <p key={i} className="text-red-500 dark:text-red-400">
+              {error}
+            </p>
+          );
+        })}
+      </div>
     </div>
   );
 }
