@@ -142,7 +142,7 @@ export default function InvoiceForm() {
         str += fields.date + "-";
       }
       if (fields.destName) {
-        str += fields.destName + "-";
+        str += fields.destName.replaceAll(" ", "-").toLowerCase() + "-";
       }
       return str + "invoice";
     }
@@ -192,7 +192,7 @@ export default function InvoiceForm() {
             }}
           ></ImageDropper>
         </div>
-        <InputField {...createValues("name")} className="w-full max-w-[400px]" label="Name" placeholder="John Doe">
+        <InputField {...createValues("name")} className="w-full max-w-[400px]" label="Your Name" placeholder="John Doe">
           <PersonIcon className="w-6 h-6 text-gray-600 dark:text-gray-400"></PersonIcon>
         </InputField>
       </div>
