@@ -53,6 +53,7 @@ export default function InputField(props: InputProps) {
           type={props.type ? props.type : "text"}
           id={`input-group-${props.label.toLowerCase()}`}
           value={value || props.value || ""}
+          name={props.label.toLowerCase().replaceAll(" ", "-")}
           onChange={(ev) => {
             if (props.type === "tel") {
               let val = ev.target.value;
