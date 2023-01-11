@@ -8,12 +8,8 @@ services:
     container_name: nextapp
     env_file:
       - ./.env
-    ports:
-      - 3000:3000
-    # expose:
-    #   - 3000
-    volumes:
-      - ./nextapp:/app
+    expose:
+      - 3000
     depends_on:
       - mongodb_pdf
   mongodb_pdf:
