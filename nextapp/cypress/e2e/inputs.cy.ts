@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+/// <reference types="@testing-library/cypress" />
 const path = require("path");
 context("Inputs", () => {
   beforeEach(() => {
@@ -28,3 +29,4 @@ context("Inputs", () => {
     cy.findByText(/please add a price\./i).should("exist");
   });
 });
+export {};

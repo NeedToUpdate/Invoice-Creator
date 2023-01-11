@@ -1,3 +1,5 @@
+/// <reference types="@testing-library/cypress" />
+/// <reference types="cypress" />
 import "cypress-localstorage-commands";
 context("Mongo", () => {
   beforeEach(() => {

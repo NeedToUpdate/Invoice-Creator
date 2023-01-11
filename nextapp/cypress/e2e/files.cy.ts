@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+/// <reference types="@testing-library/cypress" />
 const path = require("path");
 context("Files", () => {
   beforeEach(() => {
@@ -20,3 +21,5 @@ context("Files", () => {
     cy.readFile(path.join(downloadsFolder, today + "-jim-jimson-invoice.pdf")).should("exist");
   });
 });
+
+export {};
