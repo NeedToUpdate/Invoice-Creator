@@ -17,7 +17,7 @@ export default function Home() {
         <meta name="msapplication-TileColor" content="#2f6690" />
         <meta name="theme-color" content="#84b3d7" />
       </Head>
-      <main className="relative flex flex-col justify-center items-center w-full h-full p-5 ">
+      <main className="relative flex flex-col justify-center items-center w-full min-h-screen  h-full p-5 ">
         <div className="absolute w-full h-full dark:bg-slate-700  bg-cover bg-[url('/images/clouds_bg.webp')] dark:bg-[url('/images/clouds_bg_dark.webp')] z-0 blur-sm scale-105"></div>
         <InvoiceForm></InvoiceForm>
       </main>
